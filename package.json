@@ -1,0 +1,30 @@
+{
+  "name": "wheather-app",
+  "version": "1.0.0",
+  "description": "A Node.js application to fetch and cache weather data using TypeScript, Fastify, and SQLite.",
+  "main": "server.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/server.ts",
+    "start": "node dist/server.js",
+    "prestart": "npm run build",
+    "database:init": "npx ts-node src/database.init.ts",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "Victor Thiago",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "fastify": "^4.28.1",
+    "fastify-sqlite": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.11",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  }
+}
