@@ -12,17 +12,17 @@ describe("Weather Service", () => {
   it("should return cached weather data if available", async () => {
     const timestamp = Date.now();
     mockedCacheService.getCachedWeather.mockResolvedValue({
-      city: "London",
+      location: "London",
       date: "2024-07-16",
       celsius: 25,
       fahrenheit: 77,
       timestamp,
     });
 
-    const result = await getWeather({ city: "London", date: "2024-07-16" });
+    const result = await getWeather({ location: "London", date: "2024-07-16" });
 
     expect(result).toEqual({
-      city: "London",
+      location: "London",
       date: "2024-07-16",
       celsius: 25,
       fahrenheit: 77,
@@ -38,10 +38,10 @@ describe("Weather Service", () => {
 
     const timestamp = Date.now();
 
-    const result = await getWeather({ city: "London", date: "2024-07-16" });
+    const result = await getWeather({ location: "London", date: "2024-07-16" });
 
     expect(result).toEqual({
-      city: "London",
+      location: "London",
       date: "2024-07-16",
       celsius: 25,
       fahrenheit: 77,

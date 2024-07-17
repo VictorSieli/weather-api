@@ -8,7 +8,7 @@ describe("Cache Service", () => {
   beforeAll(async () => {
     const db = await openDb();
     await db.exec(
-      "CREATE TABLE IF NOT EXISTS weather_cache (city TEXT, date TEXT, celsius REAL, fahrenheit REAL, PRIMARY KEY (city, date))"
+      "CREATE TABLE IF NOT EXISTS weather_cache (location TEXT, date TEXT, celsius REAL, fahrenheit REAL, timestamp INTEGER, PRIMARY KEY (location, date))"
     );
     await db.close();
   });
@@ -19,7 +19,7 @@ describe("Cache Service", () => {
 
     const result = await getCachedWeather("London", "2024-07-16");
     expect(result).toEqual({
-      city: "London",
+      location: "London",
       date: "2024-07-16",
       celsius: 25,
       fahrenheit: 77,
@@ -28,7 +28,7 @@ describe("Cache Service", () => {
   });
 
   it("should return null for non-cached data", async () => {
-    const result = await getCachedWeather("NonExistingCity", "2024-07-16");
+    const result = await getCachedWeather("NonExistinglocation", "2024-07-16");
     expect(result).toBeUndefined();
   });
 });

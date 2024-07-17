@@ -1,7 +1,7 @@
 import { openDb } from "../database";
 
 interface WeatherCache {
-  city: string;
+  location: string;
   date: string;
   celsius: number;
   fahrenheit: number;
@@ -10,57 +10,79 @@ interface WeatherCache {
 
 export type CacheResponse = WeatherCache | undefined;
 
+/**
+ * Retrieves cached weather data from the database.
+ *
+ * @param {string} location - The location to retrieve cached weather data for.
+ * @param {string} date - The date to retrieve cached weather data for.
+ * @returns {Promise<CacheResponse>} A promise that resolves to the cached weather data or undefined if not found.
+ * @throws {Error} Throws an error if the database operation fails.
+ */
 export async function getCachedWeather(
-  city: string,
+  location: string,
   date: string
 ): Promise<CacheResponse> {
   const db = await openDb();
 
-  const result = await db.get(
-    "SELECT * FROM weather_cache WHERE city = ? AND date = ?",
-    [city, date]
-  );
+  try {
+    const result = await db.get(
+      "SELECT * FROM weather_cache WHERE location = ? AND date = ?",
+      [location, date]
+    );
 
-  if (!result) {
-    await db.close();
-    return undefined;
-  }
-
-  const currentTime = Date.now();
-
-  if (currentTime - result.timestamp < 10000) {
-    // 10 seconds expiration
-    await db.close();
-    return result;
-  } else {
-    try {
-      db.run(`DELETE FROM weather_cache WHERE city = ? AND date = ?`, [
-        city,
-        date,
-      ]);
-
-      await db.close();
+    if (!result) {
       return undefined;
-    } catch (error) {
-      await db.close();
-      throw error;
     }
+
+    const currentTime = Date.now();
+
+    if (currentTime - result.timestamp < 10000) {
+      // 10 seconds expiration
+      return result;
+    } else {
+      await db.run(
+        "DELETE FROM weather_cache WHERE location = ? AND date = ?",
+        [location, date]
+      );
+      return undefined;
+    }
+  } catch (error) {
+    console.error("Error retrieving cached weather data:", error);
+    throw error;
+  } finally {
+    await db.close();
   }
 }
 
+/**
+ * Caches weather data in the database.
+ *
+ * @param {string} location - The location of the weather data.
+ * @param {string} date - The date of the weather data.
+ * @param {number} celsius - The temperature in Celsius.
+ * @param {number} fahrenheit - The temperature in Fahrenheit.
+ * @param {number} timestamp - The timestamp of the data.
+ * @returns {Promise<void>} A promise that resolves when the data is cached.
+ * @throws {Error} Throws an error if the database operation fails.
+ */
 export async function cacheWeather(
-  city: string,
+  location: string,
   date: string,
   celsius: number,
   fahrenheit: number,
   timestamp: number
-) {
+): Promise<void> {
   const db = await openDb();
 
-  await db.run(
-    "INSERT OR REPLACE INTO weather_cache (city, date, celsius, fahrenheit, timestamp) VALUES (?, ?, ?, ?, ?)",
-    [city, date, celsius, fahrenheit, timestamp]
-  );
-
-  await db.close();
+  try {
+    await db.run(
+      "INSERT OR REPLACE INTO weather_cache (location, date, celsius, fahrenheit, timestamp) VALUES (?, ?, ?, ?, ?)",
+      [location, date, celsius, fahrenheit, timestamp]
+    );
+  } catch (error) {
+    console.error("Error caching weather data:", error);
+    throw error;
+  } finally {
+    await db.close();
+  }
 }

@@ -20,12 +20,12 @@ describe("weatherController", () => {
     app.close();
   });
 
-  it("should return weather data when both city and date are provided", async () => {
-    const city = "New York";
+  it("should return weather data when both location and date are provided", async () => {
+    const location = "New York";
     const date = "2024-07-17";
 
     const weatherData = {
-      city,
+      location,
       date,
       celsius: 25,
       fahrenehit: 77,
@@ -37,7 +37,7 @@ describe("weatherController", () => {
       method: "GET",
       url: "/weather",
       query: {
-        city,
+        location,
         date,
       },
     });
@@ -46,10 +46,10 @@ describe("weatherController", () => {
 
     expect(JSON.parse(response.body)).toEqual(weatherData);
 
-    expect(getWeather).toHaveBeenCalledWith({ city, date });
+    expect(getWeather).toHaveBeenCalledWith({ location, date });
   });
 
-  it("should return 400 status and error message when city is missing", async () => {
+  it("should return 400 status and error message when location is missing", async () => {
     const date = "2024-07-17";
 
     let response = await app.inject({
@@ -62,18 +62,18 @@ describe("weatherController", () => {
 
     expect(response.statusCode).toBe(400);
     expect(JSON.parse(response.body)).toEqual({
-      message: "Missing city property.",
+      message: "Missing location property.",
     });
   });
 
   it("should return 400 status and error message when date is missing", async () => {
-    const city = "New York";
+    const location = "New York";
 
     let response = await app.inject({
       method: "GET",
       url: "/weather",
       query: {
-        city,
+        location,
       },
     });
 
@@ -84,7 +84,7 @@ describe("weatherController", () => {
   });
 
   it("should return 400 status and error message when date is invalid", async () => {
-    const city = "New York";
+    const location = "New York";
     const date = "invalid-date-format";
 
     jest
@@ -95,7 +95,7 @@ describe("weatherController", () => {
       method: "GET",
       url: "/weather",
       query: {
-        city,
+        location,
         date,
       },
     });
@@ -107,7 +107,7 @@ describe("weatherController", () => {
   });
 
   it("should return 400 status and error message when date is in the future", async () => {
-    const city = "New York";
+    const location = "New York";
     const date = "2024-07-21";
 
     jest
@@ -118,7 +118,7 @@ describe("weatherController", () => {
       method: "GET",
       url: "/weather",
       query: {
-        city,
+        location,
         date,
       },
     });
@@ -130,7 +130,7 @@ describe("weatherController", () => {
   });
 
   it("should return 500 status and error message when getWeather throws an error", async () => {
-    const city = "New York";
+    const location = "New York";
     const date = "2024-07-17";
     const errorMessage = "Any error";
 
@@ -142,14 +142,14 @@ describe("weatherController", () => {
       method: "GET",
       url: "/weather",
       query: {
-        city,
+        location,
         date,
       },
     });
 
     expect(response.statusCode).toBe(500);
     expect(JSON.parse(response.body)).toEqual({
-      message: "An Unexpected error ocurred, please try again later.",
+      message: "An unexpected error occurred, please try again later.",
     });
   });
 });

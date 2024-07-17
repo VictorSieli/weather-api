@@ -1,7 +1,5 @@
-import { AxiosError } from "axios";
 import { fetchWeather } from "./apiService";
 import { getCachedWeather, cacheWeather } from "./cacheService";
-import { ErrorHandler, errorHandler } from "../utils/errorHandler";
 
 interface IApiResponse {
   celsius?: number;
@@ -11,21 +9,27 @@ interface IApiResponse {
 
 interface WeatherRequest {
   date: string;
-  city: string;
+  location: string;
 }
 
 interface WeatherResponse {
   celsius: number;
   fahrenheit: number;
   date: string;
-  city: string;
+  location: string;
   timestamp: number;
 }
 
+/**
+ * Converts the API response temperature to a standard format.
+ *
+ * @param {IApiResponse} apiResponse - The API response containing temperature data.
+ * @returns {IApiResponse} The standardized temperature data.
+ */
 function convertTemperature(apiResponse: IApiResponse): IApiResponse {
   const { celsius, celcius, fahrenheit } = apiResponse;
 
-  // sometimes the api response contains a temperature value named celcius, fot that i'm checking for it here
+  // sometimes the API response contains a temperature value named celcius
   const celsiusValue = celsius ?? celcius;
 
   if (celsiusValue) {
@@ -41,34 +45,46 @@ function convertTemperature(apiResponse: IApiResponse): IApiResponse {
   }
 }
 
+/**
+ * Retrieves weather data, using the cache if available.
+ *
+ * @param {WeatherRequest} request - The weather request containing location and date.
+ * @returns {Promise<WeatherResponse>} A promise that resolves to the weather data.
+ * @throws {Error} Throws an error if the API request or database operations fail.
+ */
 export async function getWeather(
   request: WeatherRequest
 ): Promise<WeatherResponse> {
-  const { city, date } = request;
+  const { location, date } = request;
 
-  const cachedWeather = await getCachedWeather(city, date);
+  const cachedWeather = await getCachedWeather(location, date);
 
   if (cachedWeather) {
     return cachedWeather;
   }
 
   try {
-    const apiResponse: IApiResponse = await fetchWeather(city, date);
-
+    const apiResponse: IApiResponse = await fetchWeather(location, date);
     const { celsius, fahrenheit } = convertTemperature(apiResponse);
-
     const timestamp = Date.now();
 
-    await cacheWeather(city, date, celsius ?? 0, fahrenheit ?? 0, timestamp);
+    await cacheWeather(
+      location,
+      date,
+      celsius ?? 0,
+      fahrenheit ?? 0,
+      timestamp
+    );
 
     return {
-      city,
+      location,
       date,
       celsius: celsius ?? 0,
       fahrenheit: fahrenheit ?? 0,
       timestamp,
     };
   } catch (error) {
+    console.error("Error retrieving weather data:", error);
     throw error;
   }
 }

@@ -1,14 +1,30 @@
-import Fastify from "fastify";
+import Fastify, { FastifyInstance, FastifyError } from "fastify";
 import weatherController from "./controllers/weatherController";
 
-const server = Fastify();
+/**
+ * Initializes and configures the Fastify server instance.
+ *
+ * @returns {FastifyInstance} The configured Fastify server instance.
+ */
+const createServer = (): FastifyInstance => {
+  const server: FastifyInstance = Fastify();
+  server.register(weatherController);
+  return server;
+};
 
-server.register(weatherController);
+const server: FastifyInstance = createServer();
 
-server.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
-  if (err) {
-    console.error(err);
+/**
+ * Starts the Fastify server on the specified port and host.
+ */
+const startServer = async (): Promise<void> => {
+  try {
+    const address = await server.listen({ port: 3000, host: "0.0.0.0" });
+    console.log(`Server listening at ${address}`);
+  } catch (err) {
+    console.error("Error starting server:", err);
     process.exit(1);
   }
-  console.log(`Server listening at ${address}`);
-});
+};
+
+startServer();
