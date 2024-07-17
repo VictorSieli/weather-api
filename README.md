@@ -14,8 +14,8 @@ This is a Node.js application built with TypeScript and Fastify that interacts w
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/weather-app.git
-cd weather-app
+git clone https://github.com/VictorSieli/weather-api.git
+cd weather-api
 ```
 
 2. Install dependencies:
@@ -43,13 +43,13 @@ The server will start on http://localhost:3000.
 1. Build the Docker image:
 
 ```bash
-docker build -t weather-app .
+docker build -t weather-api .
 ```
 
 2. Run the Docker container:
 
 ```bash
-docker run -p 3000:3000 weather-app
+docker run -p 3000:3000 weather-api
 ```
 
 The server will start on http://localhost:3000.
