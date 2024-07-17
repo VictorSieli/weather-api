@@ -38,7 +38,7 @@ npm run start
 
 The server will start on http://localhost:3000.
 
-# Running with Docker
+### Running with Docker
 
 1. Simple run the following command:
 
