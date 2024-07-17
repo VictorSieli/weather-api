@@ -40,16 +40,10 @@ The server will start on http://localhost:3000.
 
 # Running with Docker
 
-1. Build the Docker image:
+1. Simple run the following command:
 
 ```bash
-docker build -t weather-api .
-```
-
-2. Run the Docker container:
-
-```bash
-docker run -p 3000:3000 weather-api
+docker compose up --build
 ```
 
 The server will start on http://localhost:3000.
