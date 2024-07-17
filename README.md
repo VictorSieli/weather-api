@@ -56,13 +56,13 @@ URL: /weather
 Method: GET
 Query Parameters:
 
-- city (string): The city to fetch the weather for.
+- location (string): The location to fetch the weather for.
 - date (string): The date to fetch the weather for in ISO 8601 format.
 
 ### Example
 
 ```bash
-GET /weather?city=London&date=2024-07-16
+GET /weather?location=London&date=2024-07-16
 ```
 
 # Testing
@@ -76,9 +76,9 @@ npm test
 # Assumptions
 
 - The weather API may randomly return errors and might alternate unpredictably between Celsius and Fahrenheit temperature scales. The application handles these inconsistencies by converting the temperatures to both Celsius and Fahrenheit.
-- The cache expiration is handled manually by checking the date and city for each request.
+- The cache expiration is handled manually by checking the date and location for each request.
 
 # Approach
 
-- Caching: Implemented a caching solution using SQLite to avoid hitting the API rate limit. Cached temperature data by date and city. The cache expires appropriately to ensure data is not outdated.
+- Caching: Implemented a caching solution using SQLite to avoid hitting the API rate limit. Cached temperature data by date and location. The cache expires after 10 seconds to ensure data is not outdated.
 - Error Handling: Implemented robust error handling for API rate limits, random errors, and data format issues.
